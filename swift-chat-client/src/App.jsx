@@ -11,6 +11,7 @@ function App() {
       console.log("Connected to server");
     });
   }, []);
+   
   return (
     <>
       <div style={{
@@ -18,15 +19,18 @@ function App() {
     
         objectFit:'cover'
       }} className="flex object-cover">
-        <div>
+        <div className="lg:block hidden">
           <Sidebar></Sidebar>
         </div>
-        <div>
+        <div className="lg:block hidden">
           <People></People>
         </div>
-        <div className="w-[54%]">
+        <div >
           <ChatBox></ChatBox>
         </div>
+        {/* <div className="xl:w-[67%] lg:w-[54%] w-[80%]">
+          <ChatBox></ChatBox>
+        </div> */}
       </div>
     </>
   );

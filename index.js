@@ -9,6 +9,7 @@ const io = new Server(expressServer);
 const path = require("path");
 
 app.use(cors());
+
 app.use(express.static("swift-chat-client/dist"));
 
 app.get("*", (req, res) => {
@@ -17,6 +18,11 @@ app.get("*", (req, res) => {
 
 io.on("connection", (socket) => {
   console.log("New user connected");
+  
+  socket.on("sendMsg", (msg) => {
+    console.log(msg);
+    socket.broadcast.emit("brodcast", msg);
+  });
   socket.on("disconnect", () => {
     console.log("User disconnected");
   });

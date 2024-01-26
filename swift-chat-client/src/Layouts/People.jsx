@@ -16,9 +16,9 @@ const People = () => {
         <h1 className="text-2xl text-white pt-4">Message</h1>
       </div>
       <div className="space-y-4 ml-1 p-6 pl-2 pt-4 h-screen w-[300px]">
-        {peoples.map(() => (
+        {peoples.map((id) => (
           <div
-            key={peoples}
+            key={id}
             className="flex gap-3 bg-[#2c3e50] items-center px-4 py-2 rounded"
           >
             <img
