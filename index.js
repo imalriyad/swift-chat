@@ -17,14 +17,25 @@ app.get("*", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("New user connected");
-  
+  socket.on("connection", (userName) => {
+    console.log(userName?.name);
+    socket.broadcast.emit(
+      "connection",
+      `${userName?.name} has joined the chat`
+    );
+  });
+
   socket.on("sendMsg", (data) => {
     console.log(data);
     socket.broadcast.emit("brodcast", data);
   });
+
   socket.on("disconnect", () => {
     console.log("User disconnected");
+  });
+
+  socket.on("typing", (data) => {
+    socket.broadcast.emit("typing", data);
   });
 });
 

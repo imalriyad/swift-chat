@@ -5,14 +5,15 @@ import People from "./Layouts/People";
 import ChatBox from "./Layouts/ChatBox";
 import useAuth from "./hooks/useAuth";
 
+
 function App() {
   const { user } = useAuth();
   useEffect(() => {
     const socket = io("http://localhost:5000");
     socket.on("connect", () => {
-      console.log("Connected to server");
     });
   }, []);
+
 
   return (
     <>
@@ -22,7 +23,7 @@ function App() {
 
           objectFit: "cover",
         }}
-        className="flex object-cover"
+        className="flex w-full object-cover"
       >
         <div className="md:block hidden">
           <Sidebar></Sidebar>

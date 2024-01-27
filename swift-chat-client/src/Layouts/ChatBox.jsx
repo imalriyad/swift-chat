@@ -9,6 +9,20 @@ const ChatBox = () => {
   const inputRef = useRef(null);
   const socket = io("http://localhost:5000");
 
+   socket.emit("connection", {
+    name: user?.displayName,
+   });
+    
+   socket.on('connection',(data)=>{
+    const div = document.createElement("div");
+    div.innerHTML = `<div class="chat md:w-[600px] w-[290px] chat-start">
+    <div class="chat-bubble md:text-base text-sm">${data}</div>
+  </div>`;
+
+    const msgContainer = document.getElementById("msgContainer");
+    msgContainer.appendChild(div);
+   })
+
   const handleSend = () => {
     const msg = inputRef.current.value;
     if (msg === "") {
@@ -22,7 +36,8 @@ const ChatBox = () => {
     };
     socket.emit("sendMsg", newMessage);
     const div = document.createElement("div");
-    div.innerHTML = `<div class="chat md:w-[600px] w-[290px] chat-end">
+
+    div.innerHTML = `<div class="chat chat-end ">
     <div class="chat-image avatar">
       <div class="w-10 rounded-full">
         <img alt="Tailwind CSS chat bubble component" src=${user?.photoURL} />
@@ -62,19 +77,56 @@ const ChatBox = () => {
     msgContainer.appendChild(div);
   });
 
+  const handleTyping = () => {
+    socket.emit("typing", {
+      typing: `${user?.displayName} is typing...`,
+      photo: user?.photoURL,
+    });
+  };
+  const handleType = () => {
+    socket.emit("typing", {
+      typing: ``,
+    });
+  };
+
+  socket.on("typing", (data) => {
+    const msgContainer = document.getElementById("msgContainer");
+    msgContainer.innerHTML = "";
+
+    // Append the new typing message
+    const typingMessage = document.createElement("div");
+
+    typingMessage.innerHTML = `<div class="chat ${
+      data?.typing === "" ? "hidden" : "flex"
+    } md:w-[600px] w-[290px] chat-start">
+    <div class="chat-image avatar">
+      <div class="w-10 rounded-full">
+        <img alt="Tailwind CSS chat bubble component" src=${data?.photo} />
+      </div>
+    </div>
+    <div class="chat-bubble md:text-base text-sm">${data?.typing}</div>
+  </div>`;
+
+    msgContainer.appendChild(typingMessage);
+  });
+
   return (
     <>
-      <div className="h-screen pt-4 w-full relative">
+      <div className="h-screen md:pt-8 pt-6 w-full relative">
         <div
           id="msgContainer"
-          className="flex flex-col pt-8 text-white h-[90%] pr-4 fixed overflow-y-auto pb-6"
+          className="flex flex-col pt-8 text-white h-[90%] pr-2 overflow-y-auto overflow-x-hidden pb-6 absolute right-0"
         ></div>
         <div className="w-full">
           <input
             type="text"
             ref={inputRef}
+            id="input-box"
+            onKeyPress={handleTyping}
+            onFocus={handleTyping}
+            onBlur={handleType}
             placeholder="Write your message here . . ."
-            className="input input-bordered md:input-md input-sm rounded-lg font-normal bg-[#2c3e50] text-white placeholder:font-light w-[90%] absolute bottom-2"
+            className="input input-bordered md:input-md input-sm rounded-lg font-normal bg-[#2c3e50] text-white placeholder:font-light xl:w-[95%] w-[90%] absolute bottom-2"
           />
 
           <span
