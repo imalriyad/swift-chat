@@ -1,15 +1,34 @@
-import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { TiMessages } from "react-icons/ti";
+import useAuth from "../hooks/useAuth";
+import toast from "react-hot-toast";
+import SignUp from "./SignUp";
+import { useNavigate } from "react-router-dom";
+
 const Login = () => {
-    const [isShow, setShow] = useState(false);
+  const [isShow, setShow] = useState(false);
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  const closeModal = () => {
+    document.getElementById("my_modal_3").showModal();
+    document.getElementById("my_modal_4").close();
+  };
   const onSubmit = async (data) => {
-    console.log(data);
+    const email = data?.email;
+    const password = data?.password;
+
+    signIn(email, password).then(() => {
+      toast.success("Login Successfull 🎉");
+      document.getElementById("my_modal_4").close();
+      navigate("/inbox");
+    });
   };
   return (
     <div>
@@ -20,14 +39,15 @@ const Login = () => {
               ✕
             </button>
           </form>
-          <div className="mx-auto max-w-screen-xl  py-4 md:py-12 lg:px-8">
+          <div className="mx-auto max-w-screen-xl py-4 md:py-12 lg:px-8">
+            <h1 className="text-2xl flex items-center gap-3 font-semibold pb-4 capitalize">
+              Login to your account <TiMessages />
+            </h1>
             <div className="mx-auto max-w-md">
-              
               <form
                 onSubmit={handleSubmit(onSubmit)}
                 className="mb-0 space-y-4 rounded-lg  "
               >
-             
                 <div className="mt-0 pt-0">
                   <label htmlFor="email" className="sr-only">
                     Email
@@ -64,8 +84,7 @@ const Login = () => {
                     </span>
                   </div>
                 </div>
-                <div>
-                </div>
+                <div></div>
 
                 <div>
                   <label htmlFor="password" className="sr-only">
@@ -113,19 +132,21 @@ const Login = () => {
                   </div>
                 </div>
 
-                
                 <button
                   type="submit"
                   className="block w-full rounded-lg  bg-neutral px-5 py-3 text-sm font-medium text-white"
                 >
-                 Login
+                  Login
                 </button>
 
                 <p className="text-center text-sm flex text-gray-600">
                   Already have an account?
-                  <Link to={"/login"} className="underline ml-1 cursor-pointer">
-                    Sign Up
-                  </Link>
+                  <button
+                    onClick={closeModal}
+                    className="underline ml-1 cursor-pointer"
+                  >
+                    Sign up
+                  </button>
                 </p>
               </form>
               <div className="md:max-w-[220px] max-w-[140px]"> </div>
@@ -133,6 +154,7 @@ const Login = () => {
           </div>
         </div>
       </dialog>
+      <SignUp></SignUp>
     </div>
   );
 };

@@ -19,9 +19,9 @@ app.get("*", (req, res) => {
 io.on("connection", (socket) => {
   console.log("New user connected");
   
-  socket.on("sendMsg", (msg) => {
-    console.log(msg);
-    socket.broadcast.emit("brodcast", msg);
+  socket.on("sendMsg", (data) => {
+    console.log(data);
+    socket.broadcast.emit("brodcast", data);
   });
   socket.on("disconnect", () => {
     console.log("User disconnected");

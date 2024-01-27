@@ -23,11 +23,12 @@ const Hero = () => {
               className="rounded-md bg-[#2C3E50] px-5 py-2.5 text-sm text-white shadow"
               href="/"
             >
-              <Link to={"/inbox"}>
-                Get Started
+              <Link  to={"/inbox"}>
+              Get Started 
               </Link>
             </a>
           </div>
+         
         </div>
       </div>
      

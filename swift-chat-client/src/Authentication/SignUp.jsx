@@ -1,15 +1,55 @@
-import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { TiMessages } from "react-icons/ti";
+import useAuth from "../hooks/useAuth";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { updateProfile } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+const imgUploadKey = import.meta.env.VITE_APP_IMGBBKEY;
+const imageUpURI = `https://api.imgbb.com/1/upload?key=${imgUploadKey}`;
 const SignUp = () => {
-    const [isShow, setShow] = useState(false);
+  const [isShow, setShow] = useState(false);
+  const { signUp } = useAuth();
+  const navigate = useNavigate()
+  
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  const closeModal = () => {
+    document.getElementById("my_modal_4").showModal();
+    document.getElementById("my_modal_3").close();
+  };
+
   const onSubmit = async (data) => {
-    console.log(data);
+    const name = data?.name;
+    const email = data?.email;
+    const password = data?.password;
+    const imageFile = { image: data?.photourl[0] };
+    const res = await axios.post(imageUpURI, imageFile, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    const image = res.data?.data?.display_url;
+
+    signUp(email, password)
+      .then((res) => {
+        updateProfile(res.user, {
+          displayName: name,
+          photoURL: image,
+        }).then(() => {
+          console.log("name and picture updated");
+        });
+        toast.success("SignUp Successfull 🎉");
+        document.getElementById('my_modal_3').close()
+        navigate('/inbox')
+      })
+      .catch((err) => toast.error(`${err.message.slice(17).replace(")", "")}`));
   };
   return (
     <div>
@@ -21,8 +61,10 @@ const SignUp = () => {
             </button>
           </form>
           <div className="mx-auto max-w-screen-xl  py-4 md:py-12 lg:px-8">
+            <h1 className="text-2xl flex items-center gap-3 font-semibold pb-4 capitalize">
+              Create an account <TiMessages />
+            </h1>
             <div className="mx-auto max-w-md">
-              
               <form
                 onSubmit={handleSubmit(onSubmit)}
                 className="mb-0 space-y-4 rounded-lg  "
@@ -99,8 +141,7 @@ const SignUp = () => {
                     </span>
                   </div>
                 </div>
-                <div>
-                </div>
+                <div></div>
 
                 <div>
                   <label htmlFor="password" className="sr-only">
@@ -149,7 +190,6 @@ const SignUp = () => {
                 </div>
 
                 <div className="md:flex gap-2 items-center">
-                  
                   <div className="flex-1">
                     <label htmlFor="password" className="sr-only">
                       Picture
@@ -179,9 +219,12 @@ const SignUp = () => {
 
                 <p className="text-center text-sm flex text-gray-600">
                   Already have an account?
-                  <Link to={"/login"} className="underline ml-1 cursor-pointer">
+                  <button
+                    onClick={closeModal}
+                    className="underline ml-1 cursor-pointer"
+                  >
                     Sign in
-                  </Link>
+                  </button>
                 </p>
               </form>
               <div className="md:max-w-[220px] max-w-[140px]"> </div>

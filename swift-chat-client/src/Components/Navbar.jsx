@@ -1,8 +1,10 @@
 import { useState } from "react";
 import SignUp from "../Authentication/SignUp";
 import Login from "../Authentication/Login";
+import useAuth from "../hooks/useAuth";
 
 const Navbar = () => {
+  const { user } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -52,27 +54,35 @@ const Navbar = () => {
               </nav>
 
               <div className="flex items-center gap-4">
-                <div className="sm:flex sm:gap-4">
-                  <p
-                    onClick={() =>
-                      document.getElementById("my_modal_4").showModal()
-                    }
-                    className="rounded-md bg-[#2C3E50] px-5 py-2.5 text-sm font-medium text-white shadow cursor-pointer "
-                  >
-                    Login
-                  </p>
-
-                  <div className="hidden sm:flex">
+                {user?.photoURL ? (
+                  <div className="avatar online">
+                    <div className="w-[40px] cursor-pointer h-[40px] rounded-full">
+                      <img src={user?.photoURL} className="object-cover"/>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="sm:flex sm:gap-4">
                     <p
                       onClick={() =>
-                        document.getElementById("my_modal_3").showModal()
+                        document.getElementById("my_modal_4").showModal()
                       }
-                      className="rounded-md cursor-pointer bg-gray-100 px-5 py-2.5 text-sm font-medium text-[#2C3E50]"
+                      className="rounded-md bg-[#2C3E50] px-5 py-2.5 text-sm font-medium text-white shadow cursor-pointer "
                     >
-                      Register
+                      Login
                     </p>
+
+                    <div className="hidden sm:flex">
+                      <p
+                        onClick={() =>
+                          document.getElementById("my_modal_3").showModal()
+                        }
+                        className="rounded-md cursor-pointer bg-gray-100 px-5 py-2.5 text-sm font-medium text-[#2C3E50]"
+                      >
+                        Register
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="block md:hidden">
                   <button

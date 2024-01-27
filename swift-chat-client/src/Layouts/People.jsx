@@ -1,17 +1,17 @@
 import { IoSearchOutline } from "react-icons/io5";
 
 const People = () => {
-  const peoples = [1,2,3,4,5,6,7];
+  const peoples = [1, 2, 3, 4, 5, 6, 7];
   return (
     <div className="bg-[#111E25] max-h-screen overflow-y-auto overflow-x-hidden">
       <div className="p-6 pl-2 pb-0">
-        <div className="relative"> 
-        <input
-          type="text"
-          placeholder="Search here . . ."
-          className="input bg-[#2c3e50] pl-10 text-white font-normal input-bordered input-sm w-full max-w-xs focus:outline-none "
-        /> 
-        <IoSearchOutline className="text-[22px] text-white absolute top-1 left-3" />
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search here . . ."
+            className="input bg-[#2c3e50] pl-10 text-white font-normal input-bordered input-sm w-full max-w-xs focus:outline-none "
+          />
+          <IoSearchOutline className="text-[22px] text-white absolute top-1 left-3" />
         </div>
         <h1 className="text-2xl text-white pt-4">Message</h1>
       </div>
