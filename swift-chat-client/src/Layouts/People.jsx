@@ -1,7 +1,7 @@
 import { IoSearchOutline } from "react-icons/io5";
 
 const People = () => {
-  const peoples = [1, 2, 3, 4, 5, 6, 7];
+  const peoples = [1];
   return (
     <div className="bg-[#111E25] max-h-screen overflow-y-auto overflow-x-hidden">
       <div className="p-6 pl-2 pb-0">
