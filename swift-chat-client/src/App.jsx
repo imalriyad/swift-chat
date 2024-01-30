@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import Sidebar from "./Layouts/Sidebar";
 import People from "./Layouts/People";
@@ -8,16 +8,17 @@ import { GoArrowLeft } from "react-icons/go";
 
 function App() {
   const { user, setShowPeople, showPeople } = useAuth();
+  const [showPeopleSM, setShowPeopleSM] = useState(false);
   useEffect(() => {
     const socket = io("http://localhost:5000");
+    // const socket = io("https://swift-chat-server.onrender.com");
     socket.on("connect", () => {});
   }, []);
 
   const handleMenu = () => {
     setShowPeople(true);
+    setShowPeopleSM(true)
   };
-
-  console.log(showPeople);
 
   return (
     <>
@@ -29,17 +30,21 @@ function App() {
         }}
         className="flex w-full object-cover"
       >
-        <div className="lg:block hidden">
+        <div className={` hidden`}>
           <Sidebar></Sidebar>
         </div>
-        <div className={` hidden ${showPeople? 'hidden':''}`}>
+
+        <div className={`hidden ${showPeopleSM ? "hidden" : ""}`}>
           <People></People>
         </div>
         {showPeople ? (
-          <People></People>
+          <>
+            <Sidebar></Sidebar>
+            <People></People>
+          </>
         ) : (
           <div className="w-full relative">
-            <div className="bg-[#2C3E50] z-10 md:pt-0 p-1 absolute top-0 w-full flex gap-1 items-center">
+            <div className="bg-[#2C3E50] shadow-2xl z-10 md:pt-0 p-1 absolute top-0 w-full flex gap-1 items-center">
               <GoArrowLeft
                 onClick={handleMenu}
                 className="text-white cursor-pointer text-2xl font-bold ml-2"

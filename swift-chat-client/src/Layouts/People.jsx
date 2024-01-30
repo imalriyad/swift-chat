@@ -1,9 +1,12 @@
+/* eslint-disable react/prop-types */
 import { IoSearchOutline } from "react-icons/io5";
 
 const People = () => {
   const peoples = [1];
   return (
-    <div className="bg-[#111E25] max-h-screen overflow-y-auto overflow-x-hidden">
+    <div
+      className={`bg-[#111E25] max-h-screen overflow-y-auto overflow-x-hidden`}
+    >
       <div className="p-6 pl-2 pb-0">
         <div className="relative">
           <input
@@ -15,7 +18,7 @@ const People = () => {
         </div>
         <h1 className="text-2xl text-white pt-4">Message</h1>
       </div>
-      <div className="space-y-4 ml-1 p-6 pl-2 pt-4 h-screen w-[300px]">
+      <div className="space-y-4 ml-1 p-6 pl-2 pt-4 h-screen lg:w-[300px] w-[260px]">
         {peoples.map((id) => (
           <div
             key={id}

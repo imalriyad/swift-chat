@@ -6,13 +6,15 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import useAxios from "../hooks/useAxios";
 const imgUploadKey = import.meta.env.VITE_APP_IMGBBKEY;
 const imageUpURI = `https://api.imgbb.com/1/upload?key=${imgUploadKey}`;
 const SignUp = () => {
   const [isShow, setShow] = useState(false);
   const { signUp } = useAuth();
-  const navigate = useNavigate()
-  
+  const navigate = useNavigate();
+  const axiosPublic = useAxios();
+
   const {
     register,
     handleSubmit,
@@ -44,12 +46,28 @@ const SignUp = () => {
           photoURL: image,
         }).then(() => {
           console.log("name and picture updated");
+          document.getElementById("my_modal_3").close();
         });
-        toast.success("SignUp Successfull 🎉");
-        document.getElementById('my_modal_3').close()
-        navigate('/inbox')
+        const newUser = {
+          name,
+          email,
+          password,
+          photoURL: image,
+        };
+        axiosPublic.post("/create-user", newUser).then((res) => {
+          if (res.data === "exist") {
+            toast.error("Email Already Exist🎉");
+          }
+          if (res.data?.insertedId) {
+            toast.success("SignUp Successfull 🎉");
+            navigate("/inbox");
+          }
+        });
       })
-      .catch((err) => toast.error(`${err.message.slice(17).replace(")", "")}`));
+      .catch((err) => {
+        document.getElementById("my_modal_3").close();
+        toast.error(`${err.message.slice(17).replace(")", "")}`);
+      });
   };
   return (
     <div>

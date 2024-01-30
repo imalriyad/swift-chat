@@ -34,6 +34,8 @@ const ChatBox = () => {
       time: moment().format("h:mm A, MMM D"),
       name: user?.displayName,
       photo: user?.photoURL,
+      sender: "alriyadx@example.com",
+      receiver: "imalriyad@gmail.com",
     };
     socket.emit("sendMsg", newMessage);
     const div = document.createElement("div");
@@ -47,7 +49,8 @@ const ChatBox = () => {
     <div class="chat-header">
       ${user?.displayName}
     </div>
-    <div class="chat-bubble md:text-base text-sm">${msg}</div>
+    <div class="cha
+    t-bubble md:text-base text-sm">${msg}</div>
     <div class="chat-footer">
     <time class="text-xs">${moment().format("h:mm A, MMM D")}</time>
     </div>
@@ -58,7 +61,8 @@ const ChatBox = () => {
     inputRef.current.value = "";
   };
 
-  socket.on("brodcast", (data) => {
+  socket.on("broadcast", (data) => {
+    console.log(data);
     const div = document.createElement("div");
     div.innerHTML = `<div class="chat md:w-[600px] w-[345px] chat-start">
     <div class="chat-image avatar">
@@ -110,9 +114,6 @@ const ChatBox = () => {
 
     msgContainer.appendChild(typingMessage);
   });
-
-  
-
 
   return (
     <>
