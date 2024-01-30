@@ -3,6 +3,7 @@
 import { IoSearchOutline } from "react-icons/io5";
 import useAuth from "../hooks/useAuth";
 
+
 const People = () => {
   const { peoples, setConvo, setShowPeople, setReceiverEmail } = useAuth();
 
@@ -44,7 +45,7 @@ const People = () => {
             />
             <div className="flex flex-col">
               <h1 className="text-white text-sm">{people?.name}</h1>
-              <p className="text-gray-100 font-light text-xs">Heyy there!</p>
+              {/* <p className="text-gray-100 font-light text-xs">Heyy there!</p> */}
             </div>
           </div>
         ))}

@@ -5,9 +5,11 @@ import useAuth from "./useAuth";
 const useConversation = () => {
   const axiosPublic = useAxios();
   const { user, receiverEmail } = useAuth();
-  function getConversationId(senderEmail, receiverEmail) {
-    return `${senderEmail}-${receiverEmail}`;
-  }
+
+  const createConversationId = (user1, user2) => {
+    const sortedEmails = [user1, user2].sort();
+    return sortedEmails.join("-");
+  };
   const {
     data: conversations,
     refetch,
@@ -16,11 +18,12 @@ const useConversation = () => {
     queryKey: ["conversations"],
     queryFn: async () => {
       const res = await axiosPublic.get(
-        `/get-messages?id=${getConversationId(user?.email, receiverEmail)}`
+        `/get-messages?id=${createConversationId(user?.email, receiverEmail)}`
       );
-      return res.data;
+      return res.data[0]?.messages || [];
     },
   });
+
   return [conversations, refetch, isLoading];
 };
 
