@@ -4,42 +4,63 @@ import { useRef } from "react";
 import { io } from "socket.io-client";
 import moment from "moment";
 import useAuth from "../hooks/useAuth";
+import useAxios from "../hooks/useAxios";
+import useConversation from "../hooks/useConversation";
+
 const ChatBox = () => {
-  const { user } = useAuth();
+  const { user, receiverEmail } = useAuth();
+  const [conversations, refetch, isLoading] = useConversation();
   const inputRef = useRef(null);
+  const axiosPublic = useAxios();
+  const sendTone = new Audio("/send.mp3");
+  const ReciveTone = new Audio("/recive.mp3");
   const socket = io("http://localhost:5000");
   // const socket = io("https://swift-chat-server.onrender.com");
 
-  socket.emit("connection", {
-    name: user?.displayName,
+  const messages = conversations?.map((messages) => {
+    return messages.messages;
   });
+
+  messages?.map((message) => {
+    console.log(message);
+  });
+
+  
+
+  if (isLoading) {
+    return (
+      <div className="w-12 my-[20%] h-12 mx-auto border-4 border-dashed border-black rounded-full animate-spin border-mainColor"></div>
+    );
+  }
 
   socket.on("connection", (data) => {
     const div = document.createElement("div");
     div.innerHTML = `<div class="chat md:w-[600px] w-[345px] chat-start">
     <div class="chat-bubble md:text-base text-sm">${data}</div>
   </div>`;
-
     const msgContainer = document.getElementById("msgContainer");
     msgContainer.appendChild(div);
   });
 
   const handleSend = () => {
-    const msg = inputRef.current.value;
-    if (msg === "") {
+    const message = inputRef.current.value;
+    if (message === "") {
       return;
     }
     const newMessage = {
-      msg,
       time: moment().format("h:mm A, MMM D"),
+      senderEmail: user?.email,
       name: user?.displayName,
       photo: user?.photoURL,
-      sender: "alriyadx@example.com",
-      receiver: "imalriyad@gmail.com",
+      receiverEmail,
+      message,
     };
-    socket.emit("sendMsg", newMessage);
-    const div = document.createElement("div");
+    socket.emit("sendMessage", newMessage);
+    axiosPublic.post("/save-message", newMessage).then(() => {
+      sendTone.play();
+    });
 
+    const div = document.createElement("div");
     div.innerHTML = `<div class="chat chat-end ">
     <div class="chat-image avatar">
       <div class="w-10 rounded-full">
@@ -49,7 +70,7 @@ const ChatBox = () => {
     <div class="chat-header">
       ${user?.displayName}
     </div>
-    <div class="chat-bubble md:text-base text-sm">${msg}</div>
+    <div class="chat-bubble md:text-base text-sm">${message}</div>
     <div class="chat-footer">
     <time class="text-xs">${moment().format("h:mm A, MMM D")}</time>
     </div>
@@ -60,10 +81,11 @@ const ChatBox = () => {
     inputRef.current.value = "";
   };
 
-  socket.on("broadcast", (data) => {
-    console.log(data);
-    const div = document.createElement("div");
-    div.innerHTML = `<div class="chat md:w-[600px] w-[345px] chat-start">
+  socket.on("message", (data) => {
+    if (user?.email === data?.receiverEmail) {
+      ReciveTone.play();
+      const div = document.createElement("div");
+      div.innerHTML = `<div class="chat md:w-[600px] w-[345px] chat-start">
     <div class="chat-image avatar">
       <div class="w-10 rounded-full">
         <img alt="Tailwind CSS chat bubble component" src=${data?.photo} />
@@ -72,37 +94,42 @@ const ChatBox = () => {
     <div class="chat-header">
       ${data?.name}
     </div>
-    <div class="chat-bubble md:text-base text-sm">${data?.msg}</div>
+    <div class="chat-bubble md:text-base text-sm">${data?.message}</div>
     <div class="chat-footer">
     <time class="text-xs">${data?.time}</time> </div>
   </div>`;
-
-    const msgContainer = document.getElementById("msgContainer");
-    msgContainer.appendChild(div);
+      const msgContainer = document.getElementById("msgContainer");
+      msgContainer.appendChild(div);
+    } else {
+      return;
+    }
   });
 
   const handleTyping = () => {
     socket.emit("typing", {
       typing: `${user?.displayName} is typing...`,
       photo: user?.photoURL,
+      receiverEmail,
     });
   };
+
   const handleType = () => {
     socket.emit("typing", {
       typing: ``,
+      receiverEmail,
     });
   };
 
   socket.on("typing", (data) => {
-    const msgContainer = document.getElementById("msgContainer");
-    msgContainer.innerHTML = "";
+    if (user?.email === data?.receiverEmail) {
+      const msgContainer = document.getElementById("msgContainer");
+      msgContainer.innerHTML = "";
 
-    // Append the new typing message
-    const typingMessage = document.createElement("div");
-
-    typingMessage.innerHTML = `<div class="chat ${
-      data?.typing === "" ? "hidden" : "flex"
-    } md:w-[600px] w-[345px] chat-start">
+      // Append the new typing message
+      const typingMessage = document.createElement("div");
+      typingMessage.innerHTML = `<div class="chat ${
+        data?.typing === "" ? "hidden" : "flex"
+      } md:w-[600px] w-[345px] chat-start">
     <div class="chat-image avatar">
       <div class="w-10 rounded-full">
         <img alt="Tailwind CSS chat bubble component" src=${data?.photo} />
@@ -110,8 +137,10 @@ const ChatBox = () => {
     </div>
     <div class="chat-bubble md:text-base text-sm">${data?.typing}</div>
   </div>`;
-
-    msgContainer.appendChild(typingMessage);
+      msgContainer.appendChild(typingMessage);
+    } else {
+      return;
+    }
   });
 
   return (

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import io from "socket.io-client";
+import { useState } from "react";
+
 import Sidebar from "./Layouts/Sidebar";
 import People from "./Layouts/People";
 import ChatBox from "./Layouts/ChatBox";
@@ -11,11 +11,6 @@ import InfoModal from "./Components/InfoModal";
 function App() {
   const { setShowPeople, showPeople, createConvo } = useAuth();
   const [showPeopleSM, setShowPeopleSM] = useState(false);
-  useEffect(() => {
-    const socket = io("http://localhost:5000");
-    // const socket = io("https://swift-chat-server.onrender.com");
-    socket.on("connect", () => {});
-  }, []);
 
   const handleMenu = () => {
     setShowPeople(true);

@@ -14,9 +14,10 @@ const AuthContext = ({ children }) => {
   const axiosPublic = useAxios();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showPeople, setShowPeople] = useState(false);
+  const [showPeople, setShowPeople] = useState(true);
   const [peoples, setPeoples] = useState([]);
-  const [createConvo, setConvo] = useState();
+  const [createConvo, setConvo] = useState("");
+  const [receiverEmail, setReceiverEmail] = useState("");
 
   const signUp = (email, password) => {
     setLoading(true);
@@ -41,9 +42,11 @@ const AuthContext = ({ children }) => {
 
   useEffect(() => {
     axiosPublic.get("/get-user").then((res) => {
-      setPeoples(res.data);
+      const users = res?.data.filter((people) => people?.email !== user?.email);
+      setPeoples(users);
     });
-  }, [axiosPublic]);
+  }, [axiosPublic, user?.email]);
+
   const authInfo = {
     signUp,
     signIn,
@@ -55,6 +58,8 @@ const AuthContext = ({ children }) => {
     createConvo,
     setConvo,
     logout,
+    receiverEmail,
+    setReceiverEmail,
   };
   return (
     <div>
