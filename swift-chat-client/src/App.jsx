@@ -7,7 +7,7 @@ import useAuth from "./hooks/useAuth";
 import { GoArrowLeft } from "react-icons/go";
 
 function App() {
-  const { user, setShowPeople, showPeople } = useAuth();
+  const {setShowPeople, showPeople, createConvo } = useAuth();
   const [showPeopleSM, setShowPeopleSM] = useState(false);
   useEffect(() => {
     const socket = io("http://localhost:5000");
@@ -51,12 +51,12 @@ function App() {
               />
               <div className="avatar online">
                 <div className="md:w-[40px] w-[30px] h-[30px] m-2 cursor-pointer md:h-[40px] rounded-full">
-                  <img src={user?.photoURL} className="object-cover " />
+                  <img src={createConvo?.photoURL} className="object-cover " />
                 </div>
               </div>
               <span className="flex flex-col">
                 {" "}
-                <h1 className="text-white">{user?.displayName}</h1>
+                <h1 className="text-white">{createConvo?.name}</h1>
                 <p className="text-white text-xs">Online</p>
               </span>
             </div>

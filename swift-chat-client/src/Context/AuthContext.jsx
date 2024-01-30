@@ -7,12 +7,16 @@ import {
 } from "firebase/auth";
 import auth from "../Firebase/firebase.config";
 import { createContext, useEffect, useState } from "react";
+import useAxios from "../hooks/useAxios";
 
 export const AuthProvider = createContext(null);
 const AuthContext = ({ children }) => {
+  const axiosPublic = useAxios();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showPeople,setShowPeople] = useState(false)
+  const [showPeople, setShowPeople] = useState(false);
+  const [peoples, setPeoples] = useState([]);
+  const [createConvo, setConvo] = useState();
 
   const signUp = (email, password) => {
     setLoading(true);
@@ -24,8 +28,8 @@ const AuthContext = ({ children }) => {
   };
 
   const logout = () => {
-    return signOut(auth)
-  }
+    return signOut(auth);
+  };
 
   useEffect(() => {
     const unsubScribe = onAuthStateChanged(auth, (currentUser) => {
@@ -35,6 +39,11 @@ const AuthContext = ({ children }) => {
     return () => unsubScribe();
   }, []);
 
+  useEffect(() => {
+    axiosPublic.get("/get-user").then((res) => {
+      setPeoples(res.data);
+    });
+  }, [axiosPublic]);
   const authInfo = {
     signUp,
     signIn,
@@ -42,6 +51,9 @@ const AuthContext = ({ children }) => {
     loading,
     showPeople,
     setShowPeople,
+    peoples,
+    createConvo,
+    setConvo,
     logout,
   };
   return (

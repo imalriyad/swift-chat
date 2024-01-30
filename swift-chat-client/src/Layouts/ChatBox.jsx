@@ -49,8 +49,7 @@ const ChatBox = () => {
     <div class="chat-header">
       ${user?.displayName}
     </div>
-    <div class="cha
-    t-bubble md:text-base text-sm">${msg}</div>
+    <div class="chat-bubble md:text-base text-sm">${msg}</div>
     <div class="chat-footer">
     <time class="text-xs">${moment().format("h:mm A, MMM D")}</time>
     </div>
