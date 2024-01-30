@@ -5,9 +5,11 @@ import People from "./Layouts/People";
 import ChatBox from "./Layouts/ChatBox";
 import useAuth from "./hooks/useAuth";
 import { GoArrowLeft } from "react-icons/go";
+import { IoMdInformationCircleOutline } from "react-icons/io";
+import InfoModal from "./Components/InfoModal";
 
 function App() {
-  const {setShowPeople, showPeople, createConvo } = useAuth();
+  const { setShowPeople, showPeople, createConvo } = useAuth();
   const [showPeopleSM, setShowPeopleSM] = useState(false);
   useEffect(() => {
     const socket = io("http://localhost:5000");
@@ -17,7 +19,7 @@ function App() {
 
   const handleMenu = () => {
     setShowPeople(true);
-    setShowPeopleSM(true)
+    setShowPeopleSM(true);
   };
 
   return (
@@ -59,11 +61,19 @@ function App() {
                 <h1 className="text-white">{createConvo?.name}</h1>
                 <p className="text-white text-xs">Online</p>
               </span>
+              <IoMdInformationCircleOutline
+                onClick={() =>
+                  document?.getElementById("my_modal_5")?.showModal()
+                }
+                className="text-white absolute right-5 cursor-pointer text-2xl font-bold "
+              />
+              ;
             </div>
             <ChatBox></ChatBox>
           </div>
         )}
       </div>
+      <InfoModal></InfoModal>
     </>
   );
 }
