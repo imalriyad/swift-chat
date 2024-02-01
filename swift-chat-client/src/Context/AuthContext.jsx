@@ -45,6 +45,7 @@ const AuthContext = ({ children }) => {
     axiosPublic.get("/get-user").then((res) => {
       const users = res?.data.filter((people) => people?.email !== user?.email);
       setPeoples(users);
+      setLoading(false);
     });
   }, [axiosPublic, user?.email]);
 
@@ -61,7 +62,8 @@ const AuthContext = ({ children }) => {
     logout,
     receiverEmail,
     setReceiverEmail,
-  
+    setPeoples,
+    setLoading,
   };
   return (
     <div>
