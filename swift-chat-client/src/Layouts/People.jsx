@@ -3,18 +3,15 @@
 import { IoSearchOutline } from "react-icons/io5";
 import useAuth from "../hooks/useAuth";
 
-
 const People = () => {
   const { peoples, setConvo, setShowPeople, setReceiverEmail } = useAuth();
 
   const handleCreateConvo = (people) => {
     setConvo(people);
-    const receiverEmail = people?.email
+    const receiverEmail = people?.email;
     setReceiverEmail(receiverEmail);
     setShowPeople(false);
   };
-
-
 
   return (
     <div

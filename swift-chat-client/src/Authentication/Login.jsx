@@ -5,10 +5,12 @@ import useAuth from "../hooks/useAuth";
 import toast from "react-hot-toast";
 import SignUp from "./SignUp";
 import { useNavigate } from "react-router-dom";
+import useAxios from "../hooks/useAxios";
 
 const Login = () => {
   const [isShow, setShow] = useState(false);
   const { signIn } = useAuth();
+  const axiosPublic = useAxios();
   const navigate = useNavigate();
   const {
     register,
@@ -25,11 +27,15 @@ const Login = () => {
     const password = data?.password;
 
     signIn(email, password).then(() => {
-      toast.success("Login Successfull 🎉");
-      document.getElementById("my_modal_4").close();
-      navigate("/inbox");
+      axiosPublic.post("/jwt-token", {email}).then((res) => {
+        console.log(res.data);
+        toast.success("Login Successfull 🎉");
+        document.getElementById("my_modal_4").close();
+        navigate("/inbox");
+      });
     });
   };
+
   return (
     <div>
       <dialog id="my_modal_4" className="modal">

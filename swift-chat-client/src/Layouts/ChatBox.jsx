@@ -1,42 +1,127 @@
 import { RiSendPlane2Fill } from "react-icons/ri";
 // import { FaMicrophone } from "react-icons/fa6";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import moment from "moment";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
 import useConversation from "../hooks/useConversation";
+import { RiArrowDownLine } from "react-icons/ri";
 
 const ChatBox = () => {
   const { user, receiverEmail } = useAuth();
-  const [conversations,,isLoading] = useConversation();
+  const [conversations, conversationId, isLoading] = useConversation();
+  const [goBottom, setGoBottom] = useState(true);
   const inputRef = useRef(null);
   const axiosPublic = useAxios();
   const sendTone = new Audio("/send.mp3");
-  const ReciveTone = new Audio("/recive.mp3");
-  const socket = io("http://localhost:5000");
+
+  const socket = io("http://localhost:5000", {
+    transports: ["websocket"],
+    upgrade: false,
+    withCredentials: true, // Send cookies with WebSocket connection
+  });
   // const socket = io("https://swift-chat-server.onrender.com");
 
+  // Handle go bottom icon while scrolling
   useEffect(() => {
     const msgContainer = document.getElementById("msgContainer");
-    msgContainer?.scrollTo(20, msgContainer?.scrollHeight);
+    let lastScrollTop = 0;
+
+    const handleScroll = () => {
+      const scrollTop = msgContainer?.scrollTop || 0;
+
+      // Check if the user has scrolled beyond 30 pixels
+      if (scrollTop > 30) {
+        setGoBottom(true);
+      } else {
+        setGoBottom(false);
+      }
+
+      // Check the scroll direction
+      if (scrollTop > lastScrollTop) {
+        // Scrolling down, hide the button
+        setGoBottom(false);
+      } else {
+        // Scrolling up, show the button
+        setGoBottom(true);
+      }
+
+      // Save the current scroll position
+      lastScrollTop = scrollTop;
+    };
+
+    // Attach the event listener when the component mounts
+    msgContainer?.addEventListener("scroll", handleScroll);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      msgContainer?.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
+  const scrollToBottom = () => {
+    const msgContainer = document.getElementById("msgContainer");
+
+    // Scroll to the bottom
+    msgContainer?.scrollTo({
+      top: msgContainer?.scrollHeight,
+      behavior: "smooth", // You can use 'auto' for instant scroll
+    });
+  };
+
+  // Recvive message and show to ui
+  useEffect(() => {
+    const ReciveTone = new Audio("/recive.mp3");
+    const handleMessage = (data) => {
+      // Check if the received message is meant for the current user also have to be their conversationId same
+      if (
+        user?.email === data?.receiverEmail &&
+        conversationId === data.conversationId
+      ) {
+        ReciveTone.play();
+
+        const div = document.createElement("div");
+        div.innerHTML = `<div class="chat md:w-[600px] w-[345px] chat-start">
+        <div class="chat-image avatar">
+          <div class="w-10 rounded-full">
+            <img alt="Tailwind CSS chat bubble component" src=${data?.photo} />
+          </div>
+        </div>
+        <div class="chat-header">${data?.name}</div>
+        <div class="chat-bubble md:text-base text-sm">${data?.message}</div>
+        <div class="chat-footer">
+          <time class="text-xs">${data?.time}</time>
+        </div>
+      </div>`;
+
+        const msgContainer = document.getElementById("msgContainer");
+        msgContainer.appendChild(div);
+        msgContainer?.scrollTo(20, msgContainer?.scrollHeight);
+      } else {
+        return;
+      }
+    };
+
+    // Bind the event when the component mounts
+    socket.on("message", handleMessage);
+
+    // Clean up the event binding when the component unmounts
+    return () => {
+      socket.off("message", handleMessage);
+    };
+  }, [user?.email, socket, conversationId]);
+
+  // Showing loader in ui
   if (isLoading) {
     return (
-      <div className="w-12 my-[20%] h-12 mx-auto border-4 border-dashed border-black rounded-full animate-spin border-mainColor"></div>
+      <div className="mx-auto max-w-screen-sm text-center py-[20%]">
+        <span className="loading loading-spinner text-info"></span>
+      </div>
     );
   }
 
-  socket.on("connection", (data) => {
-    const div = document.createElement("div");
-    div.innerHTML = `<div class="chat md:w-[600px] w-[345px] chat-start">
-    <div class="chat-bubble md:text-base text-sm">${data}</div>
-  </div>`;
-    const msgContainer = document.getElementById("msgContainer");
-    msgContainer.appendChild(div);
-  });
-
+  // send mesage with socket.io
   const handleSend = () => {
     const message = inputRef.current.value;
     if (message === "") {
@@ -76,65 +161,49 @@ const ChatBox = () => {
     inputRef.current.value = "";
   };
 
-  socket.on("message", (data) => {
-    if (user?.email === data?.receiverEmail) {
-      ReciveTone.play();
-      const div = document.createElement("div");
-      div.innerHTML = `<div class="chat md:w-[600px] w-[345px] chat-start">
-    <div class="chat-image avatar">
-      <div class="w-10 rounded-full">
-        <img alt="Tailwind CSS chat bubble component" src=${data?.photo} />
-      </div>
-    </div>
-    <div class="chat-header">
-      ${data?.name}
-    </div>
-    <div class="chat-bubble md:text-base text-sm">${data?.message}</div>
-    <div class="chat-footer">
-    <time class="text-xs">${data?.time}</time> </div>
-  </div>`;
-      const msgContainer = document.getElementById("msgContainer");
-      msgContainer.appendChild(div);
-    } else {
-      return;
-    }
-  });
-
+  // Handle typing and emit socket.io
   const handleTyping = () => {
     socket.emit("typing", {
       typing: `${user?.displayName} is typing...`,
       photo: user?.photoURL,
       receiverEmail,
+      conversationId,
     });
   };
 
+  // Handle typing and emit socket.io
   const handleType = () => {
     socket.emit("typing", {
       typing: ``,
       receiverEmail,
+      conversationId,
     });
   };
 
-  socket.on("typing", (data) => {
+  // show typing in ui
+  socket.on("typingNotify", (data) => {
+    const msgContainer = document.getElementById("msgContainer");
     if (user?.email === data?.receiverEmail) {
-      const msgContainer = document.getElementById("msgContainer");
-      msgContainer.innerHTML = "";
+      // Remove existing typing messages
+      const typingMessages = msgContainer?.querySelectorAll(".typing-message");
+      typingMessages?.forEach((message) => message.remove());
 
-      // Append the new typing message
-      const typingMessage = document.createElement("div");
-      typingMessage.innerHTML = `<div class="chat ${
-        data?.typing === "" ? "hidden" : "flex"
-      } md:w-[600px] w-[345px] chat-start">
-    <div class="chat-image avatar">
-      <div class="w-10 rounded-full">
-        <img alt="Tailwind CSS chat bubble component" src=${data?.photo} />
+      // Append the new typing message if there's content
+      if (data?.typing) {
+        const typingMessage = document.createElement("div");
+        typingMessage.className =
+          "chat flex md:w-[600px] w-[345px] chat-start typing-message";
+        typingMessage.innerHTML = `
+      <div class="chat-image avatar">
+        <div class="w-10 rounded-full">
+          <img alt="Tailwind CSS chat bubble component" src=${data?.photo} />
+        </div>
       </div>
-    </div>
-    <div class="chat-bubble md:text-base text-sm">${data?.typing}</div>
-  </div>`;
-      msgContainer.appendChild(typingMessage);
-    } else {
-      return;
+      <div class="chat-bubble md:text-base text-sm">${data?.typing}</div>
+    `;
+        msgContainer.appendChild(typingMessage);
+        msgContainer?.scrollTo(20, msgContainer?.scrollHeight);
+      }
     }
   });
 
@@ -145,6 +214,15 @@ const ChatBox = () => {
           id="msgContainer"
           className="flex w-full flex-col pt-8 text-white h-[90%] pr-2 overflow-y-auto overflow-x-hidden pb-6 "
         >
+          <div id="down" className="absolute left-[45%] z-10 top-[60%]">
+            {" "}
+            {goBottom && (
+              <button onClick={scrollToBottom}>
+                {" "}
+                <RiArrowDownLine className="text-3xl text-[#c0c6cc]" />
+              </button>
+            )}
+          </div>
           <div className="w-full">
             {conversations?.map((message, idx) => (
               <div

@@ -9,24 +9,26 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import { IoMdLogOut } from "react-icons/io";
 import toast from "react-hot-toast";
+import useAxios from "../hooks/useAxios";
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const axiosPublic = useAxios();
   const handleLogut = () => {
     logout()
       .then(() => {
-        toast.success("Successfully Logout!");
-        navigate("/");
+        axiosPublic.post("/logout").then(() => {
+          toast.success("Successfully Logout!");
+          navigate("/");
+        });
       })
       .catch((error) =>
         toast.error(`${error.message.slice(22).replace(")", "")}`)
       );
   };
   return (
-    <div
-      className={`bg-[#111E25] h-screen lg:w-[80px] w-[60px]`}
-    >
+    <div className={`bg-[#111E25] h-screen lg:w-[80px] w-[60px]`}>
       <div className="flex-col justify-between py-4">
         <div className="absolute flex flex-col space-y-8 left-5 top-32">
           <Link to="/" className=" cursor-pointer">
