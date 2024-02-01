@@ -6,10 +6,7 @@ const PrivateRoute = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-screen-sm text-center py-[20%]">
-        <span className="loading loading-spinner text-info"></span>
-      </div>
-     
+      <div className="w-16 max-w-screen-sm mx-auto text-center my-[20%] border-indigo-400 h-16 border-4 border-dashed rounded-full animate-spin dark:border-violet-400"></div>
     );
   }
 

@@ -19,6 +19,7 @@ const AuthContext = ({ children }) => {
   const [createConvo, setConvo] = useState("");
   const [receiverEmail, setReceiverEmail] = useState("");
 
+
   const signUp = (email, password) => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
@@ -60,6 +61,7 @@ const AuthContext = ({ children }) => {
     logout,
     receiverEmail,
     setReceiverEmail,
+  
   };
   return (
     <div>
