@@ -11,7 +11,7 @@ import { RiArrowDownLine } from "react-icons/ri";
 const ChatBox = () => {
   const { user, receiverEmail } = useAuth();
   const [conversations, conversationId, isLoading] = useConversation();
-  const [goBottom, setGoBottom] = useState(true);
+  // const [goBottom, setGoBottom] = useState(false);
   const inputRef = useRef(null);
   const axiosPublic = useAxios();
   const sendTone = new Audio("/send.mp3");
@@ -23,8 +23,19 @@ const ChatBox = () => {
   });
   // const socket = io("https://swift-chat-server.onrender.com");
 
-  // Handle go bottom icon while scrolling
+  const [goBottom, setGoBottom] = useState(false);
+  const [initialScroll, setInitialScroll] = useState(true);
+
   useEffect(() => {
+  
+    if (conversations?.length <= 6) {
+      setGoBottom(false);
+      setInitialScroll(false);
+    }
+    else {
+      setGoBottom(true);
+      setInitialScroll(true);
+    }
     const msgContainer = document.getElementById("msgContainer");
     let lastScrollTop = 0;
 
@@ -34,6 +45,7 @@ const ChatBox = () => {
       // Check if the user has scrolled beyond 30 pixels
       if (scrollTop > 30) {
         setGoBottom(true);
+        setInitialScroll(false);
       } else {
         setGoBottom(false);
       }
@@ -58,7 +70,7 @@ const ChatBox = () => {
     return () => {
       msgContainer?.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [conversations]);
 
   const scrollToBottom = () => {
     const msgContainer = document.getElementById("msgContainer");
@@ -216,7 +228,7 @@ const ChatBox = () => {
         >
           <div id="down" className="absolute left-[45%] z-10 top-[60%]">
             {" "}
-            {goBottom && (
+            {(initialScroll || goBottom) && (
               <button onClick={scrollToBottom}>
                 {" "}
                 <RiArrowDownLine className="text-3xl text-[#c0c6cc]" />
