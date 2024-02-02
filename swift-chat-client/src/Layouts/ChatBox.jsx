@@ -6,7 +6,6 @@ import moment from "moment";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
 import useConversation from "../hooks/useConversation";
-import SkeletonMessage from "../Components/SkeletonMessage";
 import { LuImagePlus } from "react-icons/lu";
 import { FcRemoveImage } from "react-icons/fc";
 import axios from "axios";
@@ -19,6 +18,7 @@ const ChatBox = () => {
   const axiosPublic = useAxios();
   const sendTone = new Audio("/send.mp3");
   const [selectedFile, setSelectedFile] = useState(null);
+  // const socket = io("https://swift-chat-server.onrender.com");
   const socket = io("http://localhost:5000", {
     transports: ["websocket"],
     upgrade: false,
@@ -48,8 +48,6 @@ const ChatBox = () => {
 
   // Join the new room
   socket.emit("joinRoom", room);
-
-  // const socket = io("https://swift-chat-server.onrender.com");
 
   // Recvive message and show to ui
   useEffect(() => {
@@ -124,13 +122,6 @@ const ChatBox = () => {
     });
   }, [socket, room, user?.email]);
 
-  if (isLoading) {
-    return (
-      <div className="mx-auto max-w-screen-sm text-center py-[20%]">
-        <span className="loading loading-spinner text-info"></span>
-      </div>
-    );
-  }
   // send mesage with socket.io
   const handleSend = async () => {
     let message = inputRef.current.value;
@@ -222,7 +213,9 @@ const ChatBox = () => {
         >
           <div className="w-full">
             {isLoading ? (
-              <SkeletonMessage></SkeletonMessage>
+              <div className="mx-auto max-w-screen-sm text-center py-[20%]">
+                <span className="loading loading-spinner text-info"></span>
+              </div>
             ) : (
               conversations?.map((message, idx) => (
                 <div
@@ -295,7 +288,7 @@ const ChatBox = () => {
 
           <span
             onClick={handleSend}
-            className="align-middle bg-[#2c3e50] p-3 rounded-full absolute text-xl text-white bottom-2 right-2 cursor-pointer"
+            className="align-middle bg-[#2c3e50] p-3 rounded-full absolute text-base text-white bottom-2 right-2 cursor-pointer"
           >
             <RiSendPlane2Fill />
           </span>

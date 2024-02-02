@@ -59,7 +59,6 @@ const Sidebar = () => {
             <IoSettingsOutline className="text-white md:text-[30px] text-[20px]" />{" "}
           </span>
         </div>
-
         <div className="dropdown dropdown-top absolute bottom-10 left-3">
           <div tabIndex={0} role="" className=" m-1">
             <div className="">
