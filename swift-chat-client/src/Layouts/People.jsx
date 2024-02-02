@@ -52,13 +52,13 @@ const People = () => {
           />
           <IoSearchOutline className="text-[22px] text-white absolute top-1 left-3" />
         </div>
-        <h1 className="text-2xl text-white pt-4">Message</h1>
+        <h1 className="md:text-2xl text-lg text-white pt-4">Message</h1>
       </div>
-      <div className="space-y-4 ml-1 p-6 pl-2 pt-4 h-screen lg:w-[300px] w-[260px]">
+      <div className="space-y-4 ml-1 p-6 pl-2 pt-4 overflow-y-auto lg:w-[300px] w-[260px]">
         {peoples.length <= 0 ? (
-          <h1 className="text-white pt-4 text-center">
+          <h1 className="text-white text-sm pt-4 text-center">
             {" "}
-            Um, hi! There isn't a User with this name.
+            Um, hi! There isn't a user with this name.
           </h1>
         ) : (
           peoples?.map((people) => (
@@ -74,7 +74,6 @@ const People = () => {
               />
               <div className="flex flex-col">
                 <h1 className="text-white text-sm">{people?.name}</h1>
-                {/* <p className="text-gray-100 font-light text-xs">Heyy there!</p> */}
               </div>
             </div>
           ))

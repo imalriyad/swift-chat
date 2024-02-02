@@ -30,7 +30,7 @@ const SignUp = () => {
     const name = data?.name;
     const email = data?.email;
     const password = data?.password;
-    const imageFile = { image: data?.photourl[0] };
+    const imageFile = { image: data?.photourl[0]};
     const res = await axios.post(imageUpURI, imageFile, {
       headers: {
         "Content-Type": "multipart/form-data",

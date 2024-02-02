@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import { IoHomeOutline } from "react-icons/io5";
-import { IoSearchOutline } from "react-icons/io5";
 import { IoBookmarksOutline } from "react-icons/io5";
 import { IoShareSocial } from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -34,12 +33,7 @@ const Sidebar = () => {
           <Link to="/" className=" cursor-pointer">
             <IoHomeOutline className="text-white md:text-[30px] text-[20px]" />
           </Link>
-          <span
-            className="tooltip tooltip-right cursor-pointer"
-            data-tip="Coming soon"
-          >
-            <IoSearchOutline className="text-white md:text-[30px] text-[20px]" />
-          </span>
+
           <span
             className="tooltip tooltip-right cursor-pointer"
             data-tip="Coming soon"
@@ -78,9 +72,16 @@ const Sidebar = () => {
           </div>
           <ul
             tabIndex={0}
-            className="dropdown-content z-[1] menu p-1 shadow bg-[#2C3E50] text-center rounded-lg w-24"
+            className="dropdown-content z-[1] menu p-1 shadow bg-[#2C3E50] text-center rounded-lg w-44"
           >
-            <li className="text-white">
+            <li className="text-white rounded-sm">
+              <p className="flex gap-1 capitalize">{user?.displayName}</p>
+            </li>
+            <li className="text-white rounded-sm">
+              <p className="flex gap-1">{user?.email}</p>
+            </li>
+
+            <li className="text-white btn btn-neutral btn-sm ">
               <p onClick={handleLogut} className="flex gap-1">
                 Logout <IoMdLogOut className="text-lg" />
               </p>

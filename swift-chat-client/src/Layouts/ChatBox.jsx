@@ -1,41 +1,42 @@
 import { RiSendPlane2Fill } from "react-icons/ri";
 // import { FaMicrophone } from "react-icons/fa6";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import moment from "moment";
 import useAuth from "../hooks/useAuth";
 import useAxios from "../hooks/useAxios";
 import useConversation from "../hooks/useConversation";
-import Skeleton from "react-loading-skeleton";
 import SkeletonMessage from "../Components/SkeletonMessage";
-
-
+import { LuImagePlus } from "react-icons/lu";
+import { FcRemoveImage } from "react-icons/fc";
+import axios from "axios";
+const imgbBkey = import.meta.env.VITE_APP_IMGBBKEY;
+const uploadApiUrl = `https://api.imgbb.com/1/upload?key=${imgbBkey}`;
 const ChatBox = () => {
   const { user, receiverEmail } = useAuth();
   const [conversations, isLoading] = useConversation();
   const inputRef = useRef(null);
   const axiosPublic = useAxios();
   const sendTone = new Audio("/send.mp3");
-
+  const [selectedFile, setSelectedFile] = useState(null);
   const socket = io("http://localhost:5000", {
     transports: ["websocket"],
     upgrade: false,
     withCredentials: true,
   });
 
- const msgContainerRef = useRef();
+  const msgContainerRef = useRef();
 
- useEffect(() => {
-   const msgContainer = msgContainerRef.current;
-   if (msgContainer) {
-     // Scroll to the bottom
-     msgContainer.scrollTo({
-       top: msgContainer.scrollHeight,
-       behavior: "auto",
-     });
-   }
- }, []);
-
+  useEffect(() => {
+    const msgContainer = msgContainerRef.current;
+    if (msgContainer) {
+      // Scroll to the bottom
+      msgContainer.scrollTo({
+        top: msgContainer.scrollHeight,
+        behavior: "auto",
+      });
+    }
+  }, []);
 
   const generateRoomId = (userId1, userId2) => {
     // Sort the user IDs to create a consistent room ID
@@ -63,14 +64,23 @@ const ChatBox = () => {
           </div>
         </div>
         <div class="chat-header">${data?.name}</div>
-        <div class="chat-bubble md:text-base text-sm">${data?.message}</div>
+        <div class="chat-bubble md:text-base text-sm">
+        ${
+          data.message?.startsWith("https")
+            ? `<img
+           src=${data.message}
+           class="w-[140px] object-cover h-[200px]"
+           alt=""
+         />`
+            : data.message
+        } </div>
         <div class="chat-footer">
           <time class="text-xs">${data?.time}</time>
         </div>
       </div>`;
 
       const msgContainer = document.getElementById("msgContainer");
-      msgContainer.appendChild(div);
+      msgContainer?.appendChild(div);
       msgContainer?.scrollTo(20, msgContainer?.scrollHeight);
     };
 
@@ -122,11 +132,24 @@ const ChatBox = () => {
     );
   }
   // send mesage with socket.io
-  const handleSend = () => {
-    const message = inputRef.current.value;
-    if (message === "") {
+  const handleSend = async () => {
+    let message = inputRef.current.value;
+    if (!selectedFile && !message) {
       return;
     }
+    if (selectedFile) {
+      const res = await axios.post(uploadApiUrl, selectedFile, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (res.data.success) {
+        setSelectedFile(null);
+        const image = res.data?.data?.display_url;
+        message = image;
+      }
+    }
+
     const newMessage = {
       time: moment().format("h:mm A, MMM D"),
       senderEmail: user?.email,
@@ -150,7 +173,17 @@ const ChatBox = () => {
     <div class="chat-header">
       ${user?.displayName}
     </div>
-    <div class="chat-bubble md:text-base text-sm">${message}</div>
+    <div class="chat-bubble md:text-base text-sm">
+     ${
+       message?.startsWith("https")
+         ? `<img
+           src=${message}
+           class="w-[140px] object-cover h-[200px]"
+           alt=""
+         />`
+         : message
+     } 
+    </div>
     <div class="chat-footer">
     <time class="text-xs">${moment().format("h:mm A, MMM D")}</time>
     </div>
@@ -207,7 +240,15 @@ const ChatBox = () => {
                   </div>
                   <div className="chat-header">{message?.name}</div>
                   <div className="chat-bubble md:text-base text-sm">
-                    {message?.message || <Skeleton />}
+                    {message?.message?.startsWith("https") ? (
+                      <img
+                        src={message?.message}
+                        className="w-[140px] object-cover h-[200px]"
+                        alt=""
+                      />
+                    ) : (
+                      message.message
+                    )}
                   </div>
                   <div className="chat-footer">
                     <time className="text-xs">{message?.time}</time>
@@ -226,7 +267,30 @@ const ChatBox = () => {
             onFocus={handleTyping}
             onBlur={handleStopTyping}
             placeholder="Write your message here . . ."
-            className="p-2 pl-4 focus:outline-none rounded-lg font-normal bg-[#2c3e50] text-white placeholder:font-light xl:w-[95%] md:w-[90%] w-[83%] absolute bottom-2"
+            className="p-2 pl-10  focus:outline-none rounded-lg font-normal bg-[#2c3e50] text-white placeholder:font-light xl:w-[95%] md:w-[90%] w-[83%] absolute bottom-2"
+          />
+
+          {/* Image upload icon */}
+          <label
+            htmlFor="imageInput"
+            className="align-middle bg-[#2c3e50] p-2 absolute text-2xl text-white bottom-2 cursor-pointer"
+          >
+            {selectedFile ? (
+              <FcRemoveImage onClick={() => setSelectedFile(null)} />
+            ) : (
+              <LuImagePlus />
+            )}
+          </label>
+
+          {/* Hidden input for file selection */}
+          <input
+            type="file"
+            id="imageInput"
+            accept="image/*"
+            style={{ display: "none" }}
+            onChange={(event) =>
+              setSelectedFile({ image: event.target.files[0] })
+            }
           />
 
           <span
