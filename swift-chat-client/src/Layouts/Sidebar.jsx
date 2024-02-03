@@ -8,19 +8,17 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import { IoMdLogOut } from "react-icons/io";
 import toast from "react-hot-toast";
-import useAxios from "../hooks/useAxios";
+
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const axiosPublic = useAxios();
+
   const handleLogut = () => {
     logout()
       .then(() => {
-        axiosPublic.post("/logout").then(() => {
-          toast.success("Successfully Logout!");
-          navigate("/");
-        });
+        toast.success("Successfully Logout!");
+        navigate("/");
       })
       .catch((error) =>
         toast.error(`${error.message.slice(22).replace(")", "")}`)

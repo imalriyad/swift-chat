@@ -43,7 +43,7 @@ const AuthContext = ({ children }) => {
 
   useEffect(() => {
     axiosPublic.get("/get-user").then((res) => {
-      const users = res?.data.filter((people) => people?.email !== user?.email);
+      const users = res?.data?.filter((people) => people?.email !== user?.email);
       setPeoples(users);
       setLoading(false);
     });
