@@ -6,7 +6,6 @@ import toast from "react-hot-toast";
 import SignUp from "./SignUp";
 import { useNavigate } from "react-router-dom";
 
-
 const Login = () => {
   const [isShow, setShow] = useState(false);
   const { signIn } = useAuth();
@@ -25,11 +24,16 @@ const Login = () => {
     const email = data?.email;
     const password = data?.password;
 
-    signIn(email, password).then(() => {
-       toast.success("Login Successfull 🎉");
-       document.getElementById("my_modal_4").close();
-       navigate("/inbox");
-    });
+    signIn(email, password)
+      .then(() => {
+        toast.success("Login Successfull 🎉");
+        document.getElementById("my_modal_4").close();
+        navigate("/inbox");
+      })
+      .catch((err) => {
+        document.getElementById("my_modal_3").close();
+        toast.error(`${err.message.slice(17).replace(")", "")}`);
+      });
   };
 
   return (
