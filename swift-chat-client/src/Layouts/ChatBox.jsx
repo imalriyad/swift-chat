@@ -15,17 +15,16 @@ const ChatBox = () => {
   const { user, receiverEmail } = useAuth();
   const [conversations, isLoading] = useConversation();
   const inputRef = useRef(null);
+  const msgContainerRef = useRef();
   const axiosPublic = useAxios();
   const sendTone = new Audio("/send.mp3");
   const [selectedFile, setSelectedFile] = useState(null);
   // const socket = io("https://swift-chat-server.onrender.com");
-  const socket = io("http://localhost:5000", {
+  const socket = io("https://swift-chat-server.onrender.com", {
     transports: ["websocket"],
     upgrade: false,
     withCredentials: true,
   });
-
-  const msgContainerRef = useRef();
 
   useEffect(() => {
     const msgContainer = msgContainerRef.current;
@@ -125,6 +124,7 @@ const ChatBox = () => {
   // send mesage with socket.io
   const handleSend = async () => {
     let message = inputRef.current.value;
+    console.log(selectedFile);
     if (!selectedFile && !message) {
       return;
     }
@@ -135,9 +135,9 @@ const ChatBox = () => {
         },
       });
       if (res.data.success) {
-        setSelectedFile(null);
         const image = res.data?.data?.display_url;
         message = image;
+        setSelectedFile(null);
       }
     }
 
@@ -151,7 +151,7 @@ const ChatBox = () => {
     };
     socket.emit("sendMessage", newMessage);
     axiosPublic.post("/save-message", newMessage).then(() => {
-      sendTone.play();
+      console.log("stored to db");
     });
 
     const div = document.createElement("div");
@@ -167,9 +167,9 @@ const ChatBox = () => {
     <div class="chat-bubble md:text-base text-sm">
      ${
        message?.startsWith("https")
-         ? `<img
+         ? `<img        
            src=${message}
-           class="w-[140px] object-cover h-[200px]"
+           class="w-[140px] object-cover cursor-pointer h-[200px]"
            alt=""
          />`
          : message
@@ -183,6 +183,7 @@ const ChatBox = () => {
     msgContainer.appendChild(div);
     msgContainer?.scrollTo(20, msgContainer?.scrollHeight);
     inputRef.current.value = "";
+    sendTone.play();
   };
 
   // Example on the sender (typing user) side
@@ -236,7 +237,7 @@ const ChatBox = () => {
                     {message?.message?.startsWith("https") ? (
                       <img
                         src={message?.message}
-                        className="w-[140px] object-cover h-[200px]"
+                        className="w-[140px] cursor-pointer object-cover h-[200px]"
                         alt=""
                       />
                     ) : (
@@ -268,7 +269,7 @@ const ChatBox = () => {
             htmlFor="imageInput"
             className="align-middle bg-[#2c3e50] p-2 absolute text-2xl text-white bottom-2 cursor-pointer"
           >
-            {selectedFile ? (
+            {selectedFile !== null && selectedFile !== undefined ? (
               <FcRemoveImage onClick={() => setSelectedFile(null)} />
             ) : (
               <LuImagePlus />
