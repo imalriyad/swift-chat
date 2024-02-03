@@ -69,7 +69,7 @@ const Sidebar = () => {
           </div>
           <ul
             tabIndex={0}
-            className="dropdown-content z-[1] menu p-1 shadow bg-[#2C3E50] text-center rounded-lg w-44"
+            className="dropdown-content z-[1] menu p-1 shadow bg-[#2C3E50] text-center rounded-lg w-52"
           >
             <li className="text-white rounded-sm">
               <p className="flex gap-1 capitalize">{user?.displayName}</p>
