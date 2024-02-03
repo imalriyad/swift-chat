@@ -28,10 +28,12 @@ const Login = () => {
       .then(() => {
         toast.success("Login Successfull 🎉");
         document.getElementById("my_modal_4").close();
+        document.getElementById("my_modal_3").close();
         navigate("/inbox");
       })
       .catch((err) => {
         document.getElementById("my_modal_3").close();
+        document.getElementById("my_modal_4").close();
         toast.error(`${err.message.slice(17).replace(")", "")}`);
       });
   };
