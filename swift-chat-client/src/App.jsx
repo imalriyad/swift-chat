@@ -22,10 +22,11 @@ function App() {
       <div
         style={{
           backgroundImage: "url(https://i.ibb.co/zZ0Z3CT/Desktop.webp)",
-
-          objectFit: "cover",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
         }}
-        className="flex w-full object-cover"
+        className="flex w-full h-screen"
       >
         <div className={`hidden ${showPeopleSM ? "hidden" : ""}`}>
           <People></People>

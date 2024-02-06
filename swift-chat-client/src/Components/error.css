@@ -1,0 +1,127 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,900&family=Space+Mono:wght@400;700&display=swap");
+
+* {
+  margin: 0px;
+  padding: 0px;
+}
+body {
+  font-family: space mono;
+  border-radius: 8px;
+  background: #fff;
+}
+.page-tittle {
+  padding: 20px 100px;
+  font-size: 40px;
+}
+.main-container {
+  display: flex;
+  max-width: 1145px;
+  margin: 0 auto;
+  align-items: center;
+  height: 90vh;
+}
+.image-box {
+  width: 100%;
+  margin-right: 300px;
+}
+.img {
+  width: 120%;
+  margin: 0 auto;
+}
+
+.text-box {
+  width: 100%;
+  padding: 40px;
+  margin-bottom: 80px;
+}
+.text-tittle {
+  color: #333333;
+  font-size: 41px;
+  margin-bottom: 30px;
+}
+.text-description {
+  color: var(--gray-2, #4f4f4f);
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.9px;
+  margin-bottom: 30px;
+}
+
+.backHom {
+  background-color: #333333;
+  padding: 16px 14px;
+  color: #fff;
+  font-size: 10px;
+  letter-spacing: 1px;
+  font-weight: bold;
+  line-height: normal;
+}
+
+/* Responsive for Small Screen */
+@media screen and (max-width: 576px) {
+  .main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+    height: 100vh;
+  }
+  .img {
+    width: 80%;
+    margin: 0 auto;
+  }
+  .page-tittle {
+    padding: 15px 60px;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  .text-box {
+    margin-right: 0px;
+    padding: 0;
+  }
+  .image-box {
+    width: 100%;
+    margin-right: 0;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+
+  .text-tittle {
+    color: #333333;
+    font-size: 44px;
+    margin-bottom: 30px;
+    max-width: 100%;
+    padding: 0 30px;
+  }
+  .text-description {
+    max-width: 100%;
+    padding: 0 30px;
+  }
+  button {
+    margin-left: 30px;
+  }
+}
+/* Responsive for Medium Screen */
+
+@media screen and (min-width: 576px) and (max-width: 992px) {
+  .img {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .image-box {
+    width: 100%;
+    margin-right: 30px;
+  }
+  .text-box {
+    width: 100%;
+    margin-bottom: 80px;
+  }
+  .text-tittle {
+    color: #333333;
+    font-size: 30px;
+    margin-bottom: 30px;
+  }
+}
